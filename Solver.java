@@ -20,6 +20,7 @@ import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Comparator;
 
 public class Solver {
 
@@ -35,11 +36,42 @@ public class Solver {
             parent = p;
             priority = m + b.manhattan();
         }
+
+        public int getMoves() { return moves; }
+        public int getPriority() { return priority; }
+        public Board getParent() { return parent; }
+        public boolean isGoal(String goal) { return b.toString().compareTo(goal) == 0; }
+        public SearchNode[] generateSons() {
+            //guardare le cordinate dello zero
+            //fare i 4 casi aggiungendo +1 a x o y
+            //creare array di conseguenza 
+        }
     }
+
+    //This class allows the priority queue to know which node has the priority over another node
+    private class BoardComparator implements Comparator<SearchNode> {
+        public int compare(SearchNode b1, SearchNode b2) {
+            if(b1.getPriority() == b2.getPriority()) return 0;
+            else if(b1.getPriority() < b2.getPriority()) return -1;
+            return 1;
+        }
+    }
+    
+    //Method to generate the goal node in string
+    public static String generateGoal(int n) {
+        String goal = "";
+        for(int i = 1; i < n*n; i++) {
+            goal += i + " ";
+        }
+        goal += 0 + " ";
+        return goal;   
+    }
+
     // test client (see below)
     public static void main(String[] args)  throws FileNotFoundException {
         Scanner in = new Scanner(new FileReader(args[0]));
         int n = in.nextInt();
+        final String goal = generateGoal(n);
         int[] strra = new int[(n*n)];
         for(int i = 0; i < strra.length; i++) {
             strra[i] = in.nextInt();
@@ -56,15 +88,15 @@ public class Solver {
         boolean cond = true;
         Board init_board = new Board(matrix);
         SearchNode start = new SearchNode(init_board, moves, null);
-        PriorityQueue q = new PriorityQueue<>();
+        PriorityQueue<SearchNode> q = new PriorityQueue<>(new BoardComparator());
         q.add(start);
-        while(cond) {
+        while(!x.isGoal()) {
             //Risolvere qua
-            //Stampare 
+
+            //usare metodo poll() per rimuovere la testa della coda 
             System.out.println(""); //Stampo la mossa eseguita
 
         }
-        //cioapsdaf
         
     }
 
