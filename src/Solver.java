@@ -27,10 +27,10 @@ public class Solver {
     private class SearchNode {
         private Board b;
         private int moves;
-        private Board parent;
+        private SearchNode parent;
         private int priority;
 
-        public SearchNode(Board b, int m, Board p) {
+        public SearchNode(Board b, int m, SearchNode p) {
             this.b = b;
             moves = m;
             parent = p;
@@ -41,10 +41,37 @@ public class Solver {
         public int getPriority() { return priority; }
         public Board getParent() { return parent; }
         public boolean isGoal(String goal) { return b.toString().compareTo(goal) == 0; }
-        public SearchNode[] generateSons() {
-            //guardare le cordinate dello zero
-            //fare i 4 casi aggiungendo +1 a x o y
-            //creare array di conseguenza 
+        public SearchNode[] generateSons(SearchNode parent) {
+            SearchNode[] figli = new SearchNode[4];
+            if(parent.b.get0Row() - 1 > 0) {
+                int nRow = parent.b.get0Row() - 1;
+                Board b1 = b;
+                b1.swap0(nRow, parent.b.get0Col());
+                SearchNode s1 = new SearchNode(b1, parent.moves++, parent);
+                figli[0] = s1;
+            }
+            if(parent.b.get0Row() + 1 < parent.b.getLength()) {
+                int nRow = parent.b.get0Row() + 1;
+                Board b2 = b;
+                b2.swap0(nRow, parent.b.get0Col());
+                SearchNode s2 = new SearchNode(b2, parent.moves++, parent);
+                figli[2] = s2;
+            }
+            if(parent.b.get0Col() + 1 < parent.b.getLength()) {
+                int nCol = parent.b.get0Col() + 1;
+                Board b3 = b;
+                b3.swap0(parent.b.get0Row(), nCol);
+                SearchNode s3 = new SearchNode(b3, parent.moves++, parent);
+                figli[1] = s3;
+            }
+            if(parent.b.get0Col() - 1 > 0){
+                int nCol = parent.b.get0Col() - 1;
+                Board b4 = b;
+                b4.swap0(parent.b.get0Row(), nCol);
+                SearchNode s4 = new SearchNode(b4, parent.moves++, parent);
+                figli[3] = s4;
+            }
+            return figli;
         }
     }
 
