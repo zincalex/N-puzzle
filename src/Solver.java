@@ -39,7 +39,7 @@ public class Solver {
 
         public int getMoves() { return moves; }
         public int getPriority() { return priority; }
-        public Board getParent() { return parent; }
+        public SearchNode getParent() { return parent; }
         public boolean isGoal(String goal) { return b.toString().compareTo(goal) == 0; }
         public SearchNode[] generateSons(SearchNode parent) {
             SearchNode[] figli = new SearchNode[4];
