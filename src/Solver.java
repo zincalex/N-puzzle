@@ -47,29 +47,29 @@ public class Solver {
         public Vector<SearchNode> generateSons() {
             Vector<SearchNode> figli = new Vector<SearchNode>();
             if(b.get0Row() - 1 >= 0) {
-                int nRow = b.get0Row() - 1;
-                Board b1 = b;
+                int nRow = b.get0Row() - 1; 
+                Board b1 = new Board(b);
                 b1.swap0(nRow, b.get0Col());
                 SearchNode s1 = new SearchNode(b1, getMoves() + 1, this);
                 figli.add(s1);
             }
             if(b.get0Row() + 1 < b.getLength()) {
                 int nRow = b.get0Row() + 1;
-                Board b2 = b;
+                Board b2 = new Board(b);
                 b2.swap0(nRow, b.get0Col());
                 SearchNode s2 = new SearchNode(b2, getMoves() + 1, this);
                 figli.add(s2);
             }
             if(b.get0Col() + 1 < b.getLength()) {
                 int nCol = b.get0Col() + 1;
-                Board b3 = b;
+                Board b3 = new Board(b);
                 b3.swap0(b.get0Row(), nCol);
                 SearchNode s3 = new SearchNode(b3, getMoves() + 1, this);
                 figli.add(s3);
             }
             if(b.get0Col() - 1 >= 0){
                 int nCol = b.get0Col() - 1;
-                Board b4 = b;
+                Board b4 = new Board(b);
                 b4.swap0(b.get0Row(), nCol);
                 SearchNode s4 = new SearchNode(b4, getMoves() + 1, this);
                 figli.add(s4);
@@ -100,11 +100,12 @@ public class Solver {
 
     //is the SearchNode the goal Node?
     public static boolean isGoal(SearchNode x) { 
-        return x.getBoard().toString().compareTo(goal) == 0;
+        return x.getBoard().toString().equals(goal);
     }
 
     // test client (see below)
     public static void main(String[] args)  throws FileNotFoundException {
+        long start = System.nanoTime();
         Scanner in = new Scanner(new FileReader(args[0]));
         int n = in.nextInt();
         generateGoal(n);
@@ -121,22 +122,29 @@ public class Solver {
             } 
         }
         int moves = 0;
-        boolean cond = true;
         Board init_board = new Board(matrix);
         SearchNode x = new SearchNode(init_board, moves, null);
-        PriorityQueue<SearchNode> q = new PriorityQueue<>(new BoardComparator());
+        PriorityQueue<SearchNode> q = new PriorityQueue<SearchNode>(new BoardComparator());
+
         while(!isGoal(x)) {
             Vector<SearchNode> sons = x.generateSons();
             for(int i = 0; i < sons.size(); i++) {
                 q.add(sons.elementAt(i));
             }
             x = q.poll(); 
-            System.out.println(x.getBoard().toString());
         }
-        System.out.println(x.getMoves());
-        //At this point x is the goal Node, in order to print all the moves
-        //I need to look back to parent in parent
-            
+        System.out.println(x.getMoves() + 1);
+        String[] stampa = new String[x.getMoves() + 1];
+        int indx = x.getMoves(); 
+        stampa[0] = init_board.toString();
+        while(x.getParent() != null) {
+            stampa[indx--] = x.getBoard().toString(); 
+            x = x.getParent();
+        }
+        for(int i = 0; i < stampa.length; i++) {
+            System.out.println(stampa[i]);
+        }
+        long finish = System.nanoTime();
+        System.out.println((double)(finish - start)/1000000000l);
     }
-
 }

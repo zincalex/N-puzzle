@@ -8,8 +8,6 @@ public class Board {
     private int n;
     private int row0, col0;
 
-    // create a board from an n-by-n array of tiles,
-    // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
         board = tiles;
         n = tiles.length;
@@ -21,6 +19,18 @@ public class Board {
                 }
             } 
         }
+    }
+    //copy constructor
+    public Board(Board b) {
+        n = b.n;
+        board = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = b.board[i][j];
+            }
+        } 
+        row0 = b.row0;
+        col0 = b.col0;
     }
 
     // string representation of this board O(n)
@@ -58,6 +68,7 @@ public class Board {
         row0 = row;
         col0 = col;
     }
+    
     public int get0Row() { return row0; }
     public int get0Col() { return col0; }
     public int getLength() { return n; }
