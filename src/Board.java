@@ -28,10 +28,7 @@ public class Board {
         String representation = "";
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if((board[i][j] + "") != " ") {
-                    representation += board[i][j] + " ";
-                }
-                else representation += 0 + " ";
+                representation += board[i][j] + " ";
             } 
         }
         return representation;

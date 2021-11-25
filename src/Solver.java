@@ -21,10 +21,11 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Comparator;
+import java.util.Vector;
 
 public class Solver {
 
-    private class SearchNode {
+    private static class SearchNode {
         private Board b;
         private int moves;
         private SearchNode parent;
@@ -37,68 +38,76 @@ public class Solver {
             priority = m + b.manhattan();
         }
 
+        public Board getBoard() { return b; }
         public int getMoves() { return moves; }
         public int getPriority() { return priority; }
         public SearchNode getParent() { return parent; }
-        public boolean isGoal(String goal) { return b.toString().compareTo(goal) == 0; }
-        public SearchNode[] generateSons(SearchNode parent) {
-            SearchNode[] figli = new SearchNode[4];
-            if(parent.b.get0Row() - 1 > 0) {
-                int nRow = parent.b.get0Row() - 1;
+
+        //Problema con generateSons, è come se non li creasse
+        public Vector<SearchNode> generateSons() {
+            Vector<SearchNode> figli = new Vector<SearchNode>();
+            if(b.get0Row() - 1 >= 0) {
+                int nRow = b.get0Row() - 1;
                 Board b1 = b;
-                b1.swap0(nRow, parent.b.get0Col());
-                SearchNode s1 = new SearchNode(b1, parent.moves++, parent);
-                figli[0] = s1;
+                b1.swap0(nRow, b.get0Col());
+                SearchNode s1 = new SearchNode(b1, getMoves() + 1, this);
+                figli.add(s1);
             }
-            if(parent.b.get0Row() + 1 < parent.b.getLength()) {
-                int nRow = parent.b.get0Row() + 1;
+            if(b.get0Row() + 1 < b.getLength()) {
+                int nRow = b.get0Row() + 1;
                 Board b2 = b;
-                b2.swap0(nRow, parent.b.get0Col());
-                SearchNode s2 = new SearchNode(b2, parent.moves++, parent);
-                figli[2] = s2;
+                b2.swap0(nRow, b.get0Col());
+                SearchNode s2 = new SearchNode(b2, getMoves() + 1, this);
+                figli.add(s2);
             }
-            if(parent.b.get0Col() + 1 < parent.b.getLength()) {
-                int nCol = parent.b.get0Col() + 1;
+            if(b.get0Col() + 1 < b.getLength()) {
+                int nCol = b.get0Col() + 1;
                 Board b3 = b;
-                b3.swap0(parent.b.get0Row(), nCol);
-                SearchNode s3 = new SearchNode(b3, parent.moves++, parent);
-                figli[1] = s3;
+                b3.swap0(b.get0Row(), nCol);
+                SearchNode s3 = new SearchNode(b3, getMoves() + 1, this);
+                figli.add(s3);
             }
-            if(parent.b.get0Col() - 1 > 0){
-                int nCol = parent.b.get0Col() - 1;
+            if(b.get0Col() - 1 >= 0){
+                int nCol = b.get0Col() - 1;
                 Board b4 = b;
-                b4.swap0(parent.b.get0Row(), nCol);
-                SearchNode s4 = new SearchNode(b4, parent.moves++, parent);
-                figli[3] = s4;
+                b4.swap0(b.get0Row(), nCol);
+                SearchNode s4 = new SearchNode(b4, getMoves() + 1, this);
+                figli.add(s4);
             }
             return figli;
         }
     }
 
     //This class allows the priority queue to know which node has the priority over another node
-    private class BoardComparator implements Comparator<SearchNode> {
+    private static class BoardComparator implements Comparator<SearchNode> {
         public int compare(SearchNode b1, SearchNode b2) {
             if(b1.getPriority() == b2.getPriority()) return 0;
             else if(b1.getPriority() < b2.getPriority()) return -1;
             return 1;
         }
     }
-    
+
+    //Variabile globale per il goal
+    public static String goal = "";
+
     //Method to generate the goal node in string
-    public static String generateGoal(int n) {
-        String goal = "";
+    public static void generateGoal(int n) {
         for(int i = 1; i < n*n; i++) {
             goal += i + " ";
         }
-        goal += 0 + " ";
-        return goal;   
+        goal += 0 + " ";  
+    }
+
+    //is the SearchNode the goal Node?
+    public static boolean isGoal(SearchNode x) { 
+        return x.getBoard().toString().compareTo(goal) == 0;
     }
 
     // test client (see below)
     public static void main(String[] args)  throws FileNotFoundException {
         Scanner in = new Scanner(new FileReader(args[0]));
         int n = in.nextInt();
-        final String goal = generateGoal(n);
+        generateGoal(n);
         int[] strra = new int[(n*n)];
         for(int i = 0; i < strra.length; i++) {
             strra[i] = in.nextInt();
@@ -114,17 +123,20 @@ public class Solver {
         int moves = 0;
         boolean cond = true;
         Board init_board = new Board(matrix);
-        SearchNode start = new SearchNode(init_board, moves, null);
+        SearchNode x = new SearchNode(init_board, moves, null);
         PriorityQueue<SearchNode> q = new PriorityQueue<>(new BoardComparator());
-        q.add(start);
-        while(!x.isGoal()) {
-            //Risolvere qua
-
-            //usare metodo poll() per rimuovere la testa della coda 
-            System.out.println(""); //Stampo la mossa eseguita
-
+        while(!isGoal(x)) {
+            Vector<SearchNode> sons = x.generateSons();
+            for(int i = 0; i < sons.size(); i++) {
+                q.add(sons.elementAt(i));
+            }
+            x = q.poll(); 
+            System.out.println(x.getBoard().toString());
         }
-        
+        System.out.println(x.getMoves());
+        //At this point x is the goal Node, in order to print all the moves
+        //I need to look back to parent in parent
+            
     }
 
 }
