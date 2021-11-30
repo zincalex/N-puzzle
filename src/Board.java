@@ -3,7 +3,6 @@
 import java.lang.Math;
 
 public class Board {
-
     private int[][] board;
     private int n;
     private int row0, col0;
@@ -33,6 +32,15 @@ public class Board {
         col0 = b.col0;
     }
 
+    //looks if a matrix is equal to the inital board
+    public boolean isInitial(String init) {
+        String questa = toString();
+        if(questa.compareTo(init) == 0) {
+            return true;
+        }
+        return false;
+    }
+
     // string representation of this board O(n)
     public String toString() {
         String representation = "";
@@ -59,6 +67,19 @@ public class Board {
         }
         return manh;
     } 
+    // number of tiles out of place
+    public int hamming() {
+        int ham = 0;
+        int pos = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if(board[i][j] != pos) 
+                    ham++;
+                pos++;
+            } 
+        }
+        return ham - 1; // -1 perchè quando arrivo alla fine della matrice c'è lo 0 e ovviamente dentro il for viene contato
+    }
 
     // Swap element at (row, col) with the 0 cordinates
     public void swap0(int row, int col) {

@@ -22,6 +22,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Comparator;
 import java.util.Vector;
+//TODO don’t enqueue a neighbor if its board is the same as the board of the previous search node in the game tree.
+//TODO controllare se 2 nodi hanno la stessa prio, quale delle 2 devo guardare?
+//TODO aggiungere un altra priorità
+//TODO vedere e chiedere a Edo se conviene fare tutto in 1 solo oggetto Board
 
 public class Solver {
 
@@ -50,29 +54,37 @@ public class Solver {
                 int nRow = b.get0Row() - 1; 
                 Board b1 = new Board(b);
                 b1.swap0(nRow, b.get0Col());
-                SearchNode s1 = new SearchNode(b1, getMoves() + 1, this);
-                figli.add(s1);
+                if(!b1.isInitial(inizio) || !getParent().toString().equals(b1.toString())) {
+                    SearchNode s1 = new SearchNode(b1, getMoves() + 1, this);
+                    figli.add(s1);
+                } 
             }
             if(b.get0Row() + 1 < b.getLength()) {
                 int nRow = b.get0Row() + 1;
                 Board b2 = new Board(b);
                 b2.swap0(nRow, b.get0Col());
-                SearchNode s2 = new SearchNode(b2, getMoves() + 1, this);
-                figli.add(s2);
+                if(!b2.isInitial(inizio) || !getParent().toString().equals(b2.toString())) {
+                    SearchNode s2 = new SearchNode(b2, getMoves() + 1, this);
+                    figli.add(s2);
+                }
             }
             if(b.get0Col() + 1 < b.getLength()) {
                 int nCol = b.get0Col() + 1;
                 Board b3 = new Board(b);
                 b3.swap0(b.get0Row(), nCol);
-                SearchNode s3 = new SearchNode(b3, getMoves() + 1, this);
-                figli.add(s3);
+                if(!b3.isInitial(inizio)  || !getParent().toString().equals(b3.toString())) {
+                    SearchNode s3 = new SearchNode(b3, getMoves() + 1, this);
+                    figli.add(s3);
+                }
             }
             if(b.get0Col() - 1 >= 0){
                 int nCol = b.get0Col() - 1;
                 Board b4 = new Board(b);
                 b4.swap0(b.get0Row(), nCol);
-                SearchNode s4 = new SearchNode(b4, getMoves() + 1, this);
-                figli.add(s4);
+                if(!b4.isInitial(inizio)  || !getParent().toString().equals(b4.toString())) {
+                    SearchNode s4 = new SearchNode(b4, getMoves() + 1, this);
+                    figli.add(s4);
+                }
             }
             return figli;
         }
@@ -89,6 +101,7 @@ public class Solver {
 
     //Variabile globale per il goal
     public static String goal = "";
+    public static String inizio = "";
 
     //Method to generate the goal node in string
     public static void generateGoal(int n) {
@@ -98,9 +111,12 @@ public class Solver {
         goal += 0 + " ";  
     }
 
+    //Generate the root in the game tree
+    public static void generateRoot(Board root) { inizio = root.toString(); }
+
     //is the SearchNode the goal Node?
-    public static boolean isGoal(SearchNode x) { 
-        return x.getBoard().toString().equals(goal);
+    public static boolean isGoal(SearchNode gamenode) { 
+        return gamenode.getBoard().toString().equals(goal);
     }
 
     // test client (see below)
@@ -121,11 +137,12 @@ public class Solver {
                 matrix[i][j] = strra[k++];
             } 
         }
-        int moves = 0;
-        Board init_board = new Board(matrix);
-        SearchNode x = new SearchNode(init_board, moves, null);
-        PriorityQueue<SearchNode> q = new PriorityQueue<SearchNode>(new BoardComparator());
 
+        //Resolution of the problem
+        Board init_board = new Board(matrix);
+        SearchNode x = new SearchNode(init_board, 0, null); // si potrebbe fare new SearchNode(new Board(matrix), 0, null);
+        generateRoot(init_board);
+        PriorityQueue<SearchNode> q = new PriorityQueue<SearchNode>(new BoardComparator());
         while(!isGoal(x)) {
             Vector<SearchNode> sons = x.generateSons();
             for(int i = 0; i < sons.size(); i++) {
@@ -133,7 +150,9 @@ public class Solver {
             }
             x = q.poll(); 
         }
-        System.out.println(x.getMoves() + 1);
+
+        //Printing the request, go look the proper PDF in the directory
+        System.out.println(x.getMoves());
         String[] stampa = new String[x.getMoves() + 1];
         int indx = x.getMoves(); 
         stampa[0] = init_board.toString();
@@ -146,5 +165,6 @@ public class Solver {
         }
         long finish = System.nanoTime();
         System.out.println((double)(finish - start)/1000000000l);
+    
     }
 }
