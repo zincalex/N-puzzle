@@ -5,7 +5,8 @@ import java.io.FileReader;
 import java.util.Comparator;
 import java.util.HashMap;
 
-//TODO controllare se 2 nodi hanno la stessa prio, quale delle 2 devo guardare?
+//TODO controllare se 2 nodi hanno la stessa prio, prendere quello con Heuristic più basso
+//TODO cercare di togliere ogni matrice e tenere solo le stringhe
 //TODO migliorare heuristic
 
 public class Solver {
