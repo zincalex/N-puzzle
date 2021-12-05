@@ -1,4 +1,3 @@
-// test
 public class Board {
     private int[][] matrix;
     private int row0, col0;
@@ -28,7 +27,6 @@ public class Board {
         priority = manh + moves;
     }
 
-
     public void generateString(int[][] m) {
         toString = "";
         for (int i = 0; i < Solver.n; i++) { 
@@ -37,7 +35,7 @@ public class Board {
             } 
         }
     }
-    //row e col sono gli indici dove lo zero del chiamante viene spostato
+
     public void swap0(int row, int col) {
         int temp = matrix[row][col];
         matrix[row][col] = 0;

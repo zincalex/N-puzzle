@@ -1,21 +1,3 @@
-/*
- *  Your test client should take the name of an input file as a command-line
- *  argument and print the minimum number of moves to solve the puzzle and the sequence of
- *  boards from the initial one to the solution
- *
- *  We define a search
- *  node of the game to consist of the following elements: a board, the number of moves made
- *  to reach the board, and a pointer to its parent in the game tree (defined below)
- *
- *
- *
- * 
- *
- * @author Alessandro Viespoli
- * @version
- *
- */
-
 import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
@@ -24,13 +6,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 //TODO controllare se 2 nodi hanno la stessa prio, quale delle 2 devo guardare?
-//TODO aggiungere un altra priorità
+//TODO migliorare heuristic
 
 public class Solver {
-
+    
     private static class BoardComparator implements Comparator<Board> {
         public int compare(Board b1, Board b2) {
-            if(b1.getPriority() == b2.getPriority()) return 0;
+            if(b1.getPriority() == b2.getPriority()) {
+                if
+                return 0; 
+            }
             else if(b1.getPriority() < b2.getPriority()) return -1;
             return 1;
         }
@@ -94,6 +79,5 @@ public class Solver {
          
         long finish = System.nanoTime();
         System.out.println((double)(finish - start)/1000000000l);
-    
     }
 }
