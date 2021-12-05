@@ -21,13 +21,13 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Comparator;
-//TODO don’t enqueue a neighbor if its board is the same as the board of the previous search node in the game tree.
+import java.util.HashMap;
+
 //TODO controllare se 2 nodi hanno la stessa prio, quale delle 2 devo guardare?
 //TODO aggiungere un altra priorità
-//TODO vedere e chiedere a Edo se conviene fare tutto in 1 solo oggetto Board
 
 public class Solver {
-    //This class allows the priority queue to know which node has the priority over another node
+
     private static class BoardComparator implements Comparator<Board> {
         public int compare(Board b1, Board b2) {
             if(b1.getPriority() == b2.getPriority()) return 0;
@@ -36,32 +36,25 @@ public class Solver {
         }
     }
 
-    //Variabile globale per il goal
     public static String goal = "";
-    public static String inizio = "";
     public static int n = 0;
 
-    //Method to generate the goal node in string
     public static void generateGoal() {
         for(int i = 1; i < n*n; i++) {
             goal += i + " ";
         }
-        goal += 0 + " ";  
+        goal += 0 + " "; 
     }
 
-    //Generate the root in the game tree
-    public static void generateRoot(Board root) { inizio = root.toString(); }
-
-    //is the SearchNode the goal Node?
     public static boolean isGoal(Board gameNode) { 
-        return gameNode.toString().equals(goal);
+        return gameNode.getString().equals(goal);
     }
 
-    // test client (see below)
     public static void main(String[] args)  throws FileNotFoundException {
         long start = System.nanoTime();
         Scanner in = new Scanner(new FileReader(args[0]));
         n = in.nextInt();
+        int level = 0;
         generateGoal();
         // TODO da modificare for sure
         int[] strra = new int[(n*n)];
@@ -78,24 +71,27 @@ public class Solver {
                 m_avoid_error[i][j] = 0;
             } 
         }
-
-        //Resolution of the problem, TODO aggiungere banca dati, es hash qualcosa, per sapere se un nodo è già presente nel game tree
         Board avoid_error = new Board(m_avoid_error, -1, null);
         Board nodo = new Board(m, 0, avoid_error);
-        generateRoot(nodo);
         PriorityQueue<Board> q = new PriorityQueue<Board>(new BoardComparator());
+        HashMap<String, Integer> dataBank = new HashMap<String, Integer>();
+        dataBank.put(nodo.getString(), level);
+
         while(!isGoal(nodo)) {
             Board[] sons = nodo.generateSons();
             for(int i = 0; i < sons.length; i++) {
-                q.add(sons[i]);
+                if(!dataBank.containsKey(sons[i].getString())) {
+                    q.add(sons[i]);
+                    dataBank.put(sons[i].getString(), level);
+                }
             }
-            nodo = q.poll(); 
+            level++;
+            nodo = q.poll();
         }
-
+        
         //Printing the request, go look the proper PDF in the directory
         System.out.println(nodo.getMoves());
          
-        //gestire la stampa
         long finish = System.nanoTime();
         System.out.println((double)(finish - start)/1000000000l);
     
