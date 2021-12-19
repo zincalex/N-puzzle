@@ -20,7 +20,7 @@ public class Solver {
         for(int i = 1; i < n*n; i++) {
             goal += i + " ";
         }
-        goal += 0 + " "; 
+        goal += 0; 
     }
 
     public static boolean isGoal(Board gameNode) { 
@@ -37,7 +37,7 @@ public class Solver {
         long start = System.nanoTime();
         BufferedReader in = new BufferedReader(new FileReader(args[0]));
         n = Integer.parseInt(in.readLine());
-        String first = in.readLine();
+        String first = in.readLine().trim();
         in.close();
         generateGoal();
         int level = 0;
@@ -67,7 +67,7 @@ public class Solver {
         
         String[] moves = new String[mosse + 1];
         for(int i = mosse; i >= 0; i--) {
-            moves[i] = root.getString();
+            moves[i] = root.getString() + "     HCost : " + root.getHCost();
             root = root.getParent();
         }
         for(int i = 0; i < mosse + 1; i++) {

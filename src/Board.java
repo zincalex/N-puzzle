@@ -10,6 +10,7 @@ public class Board {
         gCost = m;
         parent = p;
         toString = "";
+        hCost = 0;
         matrix = new int[Solver.n][Solver.n];
 
         for (int i = 0; i < Solver.n; i++) { 
@@ -21,9 +22,9 @@ public class Board {
                     col0 = j;
                     continue;
                 }
-                hCost += Math.abs(((matrix[i][j] - 1) / Solver.n) - i) + Math.abs(((matrix[i][j] - 1) % Solver.n) - j);
             } 
         }
+        toString = toString.trim();
         //ci deve essere il linear conflict
     }
 
@@ -32,6 +33,7 @@ public class Board {
         toString = tiles;
         matrix = new int[Solver.n][Solver.n];
         parent = avoid_error;
+        hCost = 0;
         
         int k = 0;
         String[] insertion = tiles.split(" ");
@@ -58,6 +60,7 @@ public class Board {
                 toString += m[i][j] + " ";
             } 
         }
+        toString = toString.trim();
     }
 
     public int priority() { return hCost + gCost; }
@@ -66,6 +69,9 @@ public class Board {
         int temp = matrix[row][col];
         matrix[row][col] = 0;
         matrix[row0][col0] = temp;
+        hCost = getParent().getHCost() 
+                - (Math.abs(((temp - 1) / Solver.n) - row) + Math.abs(((temp - 1) % Solver.n) - col)) 
+                + (Math.abs(((temp - 1) / Solver.n) - row0) + Math.abs(((temp - 1) % Solver.n) - col0)); 
         row0 = row;
         col0 = col;
         updateString(matrix);
