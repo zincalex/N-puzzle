@@ -1,33 +1,59 @@
 public class Board {
     private int[][] matrix;
     private int row0, col0;
-    private int moves;
+    private int gCost;
     private Board parent;
-    private int priority;
+    private int hCost;
     private String toString;
 
     public Board(int[][] tiles, int m, Board p) {
-        moves = m;
+        gCost = m;
         parent = p;
-        int manh = 0;
         toString = "";
         matrix = new int[Solver.n][Solver.n];
+
         for (int i = 0; i < Solver.n; i++) { 
             for (int j = 0; j < Solver.n; j++) {
                 matrix[i][j] = tiles[i][j];
+                toString += tiles[i][j] + " ";
                 if(tiles[i][j] == 0) {
                     row0 = i;
                     col0 = j;
                     continue;
                 }
-                manh += Math.abs(((matrix[i][j] - 1) / Solver.n) - i) + Math.abs(((matrix[i][j] - 1) % Solver.n) - j);
+                hCost += Math.abs(((matrix[i][j] - 1) / Solver.n) - i) + Math.abs(((matrix[i][j] - 1) % Solver.n) - j);
             } 
         }
-        generateString(matrix);
-        priority = manh + moves;
+
+        //ci deve essere il linear conflict
+        
     }
 
-    public void generateString(int[][] m) {
+    public Board(String tiles, Board avoid_error) {
+        gCost = 0;
+        toString = tiles;
+        matrix = new int[Solver.n][Solver.n];
+        parent = avoid_error;
+        
+        int k = 0;
+        String[] insertion = tiles.split(" ");
+        for (int i = 0; i < Solver.n; i++) { 
+            for (int j = 0; j < Solver.n; j++) {
+                matrix[i][j] = Integer.parseInt(insertion[k++]);
+                if(matrix[i][j] == 0) {
+                    row0 = i;
+                    col0 = j;
+                    continue;
+                }
+                hCost += Math.abs(((matrix[i][j] - 1) / Solver.n) - i) + Math.abs(((matrix[i][j] - 1) % Solver.n) - j);
+            } 
+        }
+
+        //ci deve essere il linear conflict
+
+    }
+
+    public void updateString(int[][] m) {
         toString = "";
         for (int i = 0; i < Solver.n; i++) { 
             for (int j = 0; j < Solver.n; j++) {
@@ -36,23 +62,17 @@ public class Board {
         }
     }
 
+    public int priority() { return hCost + gCost; }
+
     public void swap0(int row, int col) {
         int temp = matrix[row][col];
         matrix[row][col] = 0;
         matrix[row0][col0] = temp;
         row0 = row;
         col0 = col;
-        generateString(matrix);
+        updateString(matrix);
     }
     
-    public int[][] getBoard() { return matrix; }
-    public int getMoves() { return moves; }
-    public int getPriority() { return priority; }
-    public Board getParent() { return parent; }
-    public String getString() { return toString; }
-    public int get0Row() { return row0; }
-    public int get0Col() { return col0; }
-
     public Board[] generateSons() {
         byte count = 0;
         Board b1 = null;
@@ -60,7 +80,7 @@ public class Board {
         Board b3 = null;
         Board b4 = null;
         if(row0 - 1 >= 0) { 
-            b1 = new Board(matrix, moves + 1, this);
+            b1 = new Board(matrix, gCost + 1, this);
             b1.swap0(row0 - 1, col0);
             if(!parent.getString().equals(b1.getString())) { 
                 count++;
@@ -68,7 +88,7 @@ public class Board {
             else b1 = null;
         }
         if(row0 + 1 < Solver.n) {
-            b2 = new Board(matrix, moves + 1, this);
+            b2 = new Board(matrix, gCost + 1, this);
             b2.swap0(row0 + 1, col0);
             if(!parent.getString().equals(b2.getString())) {
                count++;
@@ -76,7 +96,7 @@ public class Board {
             else b2 = null;
         }
         if(col0 + 1 < Solver.n) {
-            b3 = new Board(matrix, moves + 1, this);
+            b3 = new Board(matrix, gCost + 1, this);
             b3.swap0(row0, col0 + 1);
             if(!parent.getString().equals(b3.getString())) {
                 count++;
@@ -84,7 +104,7 @@ public class Board {
             else b3 = null;
         }
         if(col0 - 1 >= 0){
-            b4 = new Board(matrix, moves + 1, this);
+            b4 = new Board(matrix, gCost + 1, this);
             b4.swap0(row0, col0 - 1);
             if(!parent.getString().equals(b4.getString())) {
                 count++;
@@ -107,20 +127,9 @@ public class Board {
         }
         return figli;
     }
+    
+    public int getMoves() { return gCost; }
+    public int getHCost() { return hCost; }
+    public Board getParent() { return parent; }
+    public String getString() { return toString; }
 }
-
- /*
-    // number of tiles out of place
-    public int hamming() {
-        int ham = 0;
-        int pos = 1;
-        for (int i = 0; i < Solver.n; i++) {
-            for (int j = 0; j < Solver.n; j++) {
-                if(matrix[i][j] != pos) 
-                    ham++;
-                pos++;
-            } 
-        }
-        return ham - 1; // -1 perchè quando arrivo alla fine della matrice c'è lo 0 e ovviamente dentro il for viene contato
-    }
-    */

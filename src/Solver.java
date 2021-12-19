@@ -1,29 +1,20 @@
 import java.util.PriorityQueue;
-import java.util.Scanner;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 
-//TODO controllare se 2 nodi hanno la stessa prio, prendere quello con Heuristic più basso
-//TODO cercare di togliere ogni matrice e tenere solo le stringhe
 //TODO migliorare heuristic
 
 public class Solver {
-    
-    private static class BoardComparator implements Comparator<Board> {
-        public int compare(Board b1, Board b2) {
-            if(b1.getPriority() == b2.getPriority()) {
-                if
-                return 0; 
-            }
-            else if(b1.getPriority() < b2.getPriority()) return -1;
-            return 1;
-        }
-    }
 
     public static String goal = "";
     public static int n = 0;
+    
+    private static class BoardComparator implements Comparator<Board> {
+        public int compare(Board b1, Board b2) { return b1.priority() - b2.priority(); }
+    }
 
     public static void generateGoal() {
         for(int i = 1; i < n*n; i++) {
@@ -36,48 +27,56 @@ public class Solver {
         return gameNode.getString().equals(goal);
     }
 
-    public static void main(String[] args)  throws FileNotFoundException {
-        long start = System.nanoTime();
-        Scanner in = new Scanner(new FileReader(args[0]));
-        n = in.nextInt();
-        int level = 0;
-        generateGoal();
-        // TODO da modificare for sure
-        int[] strra = new int[(n*n)];
-        for(int i = 0; i < strra.length; i++) {
-            strra[i] = in.nextInt();
-        }
-        in.close();
-        int[][] m = new int[n][n];
-        int[][] m_avoid_error = new int[n][n];
-        int k = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                m[i][j] = strra[k++];
-                m_avoid_error[i][j] = 0;
-            } 
-        }
-        Board avoid_error = new Board(m_avoid_error, -1, null);
-        Board nodo = new Board(m, 0, avoid_error);
-        PriorityQueue<Board> q = new PriorityQueue<Board>(new BoardComparator());
-        HashMap<String, Integer> dataBank = new HashMap<String, Integer>();
-        dataBank.put(nodo.getString(), level);
+    public static void main(String[] args)  throws IOException {
 
-        while(!isGoal(nodo)) {
-            Board[] sons = nodo.generateSons();
+        if(args.length < 1) {
+            System.out.println("Missing Input File.");
+            System.exit(1);
+        }
+
+        long start = System.nanoTime();
+        BufferedReader in = new BufferedReader(new FileReader(args[0]));
+        n = Integer.parseInt(in.readLine());
+        String first = in.readLine();
+        in.close();
+        generateGoal();
+        int level = 0;
+
+        int[][] null_matrix = new int[n][n];
+        Board avoid_error = new Board(null_matrix, -1, null);
+        Board root = new Board(first, avoid_error);
+
+
+
+        PriorityQueue<Board> q = new PriorityQueue<Board>(new BoardComparator());
+        HashMap<String, Integer> visited = new HashMap<String, Integer>();
+        visited.put(root.getString(), level);
+
+        while(!isGoal(root)) {
+            Board[] sons = root.generateSons();
             for(int i = 0; i < sons.length; i++) {
-                if(!dataBank.containsKey(sons[i].getString())) {
+                if(!visited.containsKey(sons[i].getString())) {
                     q.add(sons[i]);
-                    dataBank.put(sons[i].getString(), level);
+                    visited.put(sons[i].getString(), level);
                 }
             }
             level++;
-            nodo = q.poll();
+            root = q.poll();
         }
         
         //Printing the request, go look the proper PDF in the directory
-        System.out.println(nodo.getMoves());
-         
+        int mosse = root.getMoves();
+        System.out.println(mosse);
+        
+        String[] moves = new String[mosse + 1];
+        for(int i = mosse - 1; i >= 0; i-- ) {
+            moves[i] = root.getString();
+            root = root.getParent();
+        }
+        for(int i = 0; i < mosse; i++) {
+            System.out.println(moves[i]);
+        }
+           
         long finish = System.nanoTime();
         System.out.println((double)(finish - start)/1000000000l);
     }
