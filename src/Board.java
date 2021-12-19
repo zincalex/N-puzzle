@@ -24,9 +24,7 @@ public class Board {
                 hCost += Math.abs(((matrix[i][j] - 1) / Solver.n) - i) + Math.abs(((matrix[i][j] - 1) % Solver.n) - j);
             } 
         }
-
         //ci deve essere il linear conflict
-        
     }
 
     public Board(String tiles, Board avoid_error) {
@@ -127,7 +125,7 @@ public class Board {
         }
         return figli;
     }
-    
+
     public int getMoves() { return gCost; }
     public int getHCost() { return hCost; }
     public Board getParent() { return parent; }

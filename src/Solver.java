@@ -46,12 +46,9 @@ public class Solver {
         Board avoid_error = new Board(null_matrix, -1, null);
         Board root = new Board(first, avoid_error);
 
-
-
         PriorityQueue<Board> q = new PriorityQueue<Board>(new BoardComparator());
         HashMap<String, Integer> visited = new HashMap<String, Integer>();
         visited.put(root.getString(), level);
-
         while(!isGoal(root)) {
             Board[] sons = root.generateSons();
             for(int i = 0; i < sons.length; i++) {
@@ -69,11 +66,11 @@ public class Solver {
         System.out.println(mosse);
         
         String[] moves = new String[mosse + 1];
-        for(int i = mosse - 1; i >= 0; i-- ) {
+        for(int i = mosse; i >= 0; i--) {
             moves[i] = root.getString();
             root = root.getParent();
         }
-        for(int i = 0; i < mosse; i++) {
+        for(int i = 0; i < mosse + 1; i++) {
             System.out.println(moves[i]);
         }
            
