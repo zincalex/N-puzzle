@@ -25,7 +25,6 @@ public class Board {
             } 
         }
         toString = toString.trim();
-        //ci deve essere il linear conflict
     }
 
     public Board(String tiles, Board avoid_error) {
@@ -45,12 +44,53 @@ public class Board {
                     col0 = j;
                     continue;
                 }
-                hCost += Math.abs(((matrix[i][j] - 1) / Solver.n) - i) + Math.abs(((matrix[i][j] - 1) % Solver.n) - j);
+                hCost += Math.abs(((matrix[i][j] - 1) / Solver.n) - i) + Math.abs(((matrix[i][j] - 1) % Solver.n) - j); //spostare sotto
             } 
         }
-
-        //ci deve essere il linear conflict
-
+       
+        for (int i = 0; i < Solver.n; i++) {
+            for (int j = 0; j < Solver.n; j++) {
+                int correctRow = (matrix[i][j] -1) / Solver.n;
+                int correctCol = (matrix[i][j] -1) % Solver.n;
+                if(((correctRow == i) && (correctCol != j)) || ((correctRow != i) && (correctCol == j))) {
+                    int otherVal = matrix[correctRow][correctCol];
+                    int otherRow = (otherVal -1) / Solver.n;
+                    int otherCol = (otherVal -1) % Solver.n;
+                    if(otherRow == i && otherCol == j) {
+                        hCost++;
+                    }
+                }
+            }
+        }   
+       /*
+        for (int i = 0; i < Solver.n; i++) {
+            for (int j = 0; j < Solver.n; j++) {
+                int correctRow = (matrix[i][j] -1) / Solver.n;
+                int correctCol = (matrix[i][j] -1) % Solver.n;
+                //RIGA GIUSTA MA COL SBAGLIATA
+                if((correctRow == i) && (correctCol != j)) {
+                    for(int x = j+1; x <Solver.n; x++) {
+			        int otherVal = matrix[i][x];
+                    int otherRow = (otherVal -1) / Solver.n; //sua riga
+                    int otherCol = (otherVal -1) % Solver.n; //sua col
+			        if(otherRow == correctRow && correctCol > otherCol) {
+				        hCost += 2;
+		            }   
+                    }
+                }
+		        else if((correctRow != i) && (correctCol == j)) { //COL GIUSTA MA RIGA SBAGLIATA
+                    for(int x = i+1; x <Solver.n; x++) {
+			            int otherVal = matrix[x][j]; 
+                    	int otherRow = (otherVal -1) / Solver.n; //sua riga
+                    	int otherCol = (otherVal -1) % Solver.n; //sua col
+			            if(otherCol == correctCol && correctRow > otherRow){
+				            hCost += 2;
+                        }
+		            }
+                }
+            }
+        }
+        */
     }
 
     public void updateString(int[][] m) {
@@ -72,6 +112,28 @@ public class Board {
         hCost = getParent().getHCost() 
                 - (Math.abs(((temp - 1) / Solver.n) - row) + Math.abs(((temp - 1) % Solver.n) - col)) 
                 + (Math.abs(((temp - 1) / Solver.n) - row0) + Math.abs(((temp - 1) % Solver.n) - col0)); 
+        
+        int correctRow = (temp -1) / Solver.n;
+        int correctCol = (temp -1) % Solver.n;
+        // controllo se prima c'era conflict, in caso -2
+        if(((correctRow == row) && (correctCol != col)) || ((correctRow != row) && (correctCol == col))) {
+            int otherVal = matrix[correctRow][correctCol];
+            int otherRow = (otherVal -1) / Solver.n;
+            int otherCol = (otherVal -1) % Solver.n;
+            if(otherRow == row && otherCol == col) {
+                hCost = hCost - 2;
+            }
+        }
+        // controllo se dopo c'è conflict, in caso +2
+        if(((correctRow == row0) && (correctCol != col0)) || ((correctRow != row0) && (correctCol == col0))) {
+            int otherVal = matrix[correctRow][correctCol];
+            int otherRow = (otherVal -1) / Solver.n;
+            int otherCol = (otherVal -1) % Solver.n;
+            if(otherRow == row0 && otherCol == col0) {
+                hCost = hCost + 2;
+            }
+        }
+        
         row0 = row;
         col0 = col;
         updateString(matrix);

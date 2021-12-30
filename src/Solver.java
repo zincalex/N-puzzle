@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 
-//TODO migliorare heuristic
-
 public class Solver {
 
     public static String goal = "";
