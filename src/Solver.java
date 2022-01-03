@@ -3,7 +3,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 
 public class Solver {
 
@@ -32,30 +32,27 @@ public class Solver {
             System.exit(1);
         }
 
-        long start = System.nanoTime();
         BufferedReader in = new BufferedReader(new FileReader(args[0]));
         n = Integer.parseInt(in.readLine());
         String first = in.readLine().trim();
         in.close();
         generateGoal();
-        int level = 0;
-
+    
         int[][] null_matrix = new int[n][n];
         Board avoid_error = new Board(null_matrix, -1, null);
         Board root = new Board(first, avoid_error);
 
         PriorityQueue<Board> q = new PriorityQueue<Board>(new BoardComparator());
-        HashMap<String, Integer> visited = new HashMap<String, Integer>();
-        visited.put(root.getString(), level);
+        HashSet<String> visited = new HashSet<String>();
+        visited.add(root.getString());
         while(!isGoal(root)) {
             Board[] sons = root.generateSons();
             for(int i = 0; i < sons.length; i++) {
-                if(!visited.containsKey(sons[i].getString())) {
+                if(!visited.contains(sons[i].getString())) {
                     q.add(sons[i]);
-                    visited.put(sons[i].getString(), level);
                 }
             }
-            level++;
+            visited.add(root.getString());
             root = q.poll();
         }
         
@@ -65,14 +62,11 @@ public class Solver {
         
         String[] moves = new String[mosse + 1];
         for(int i = mosse; i >= 0; i--) {
-            moves[i] = root.getString() + "     HCost : " + root.getHCost();
+            moves[i] = root.getString();
             root = root.getParent();
         }
         for(int i = 0; i < mosse + 1; i++) {
             System.out.println(moves[i]);
         }
-           
-        long finish = System.nanoTime();
-        System.out.println((double)(finish - start)/1000000000l);
     }
 }
