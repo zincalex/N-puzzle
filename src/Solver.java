@@ -1,9 +1,13 @@
+/**
+ * @author Alessandro Viespoli 
+ */
+
 import java.util.PriorityQueue;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class Solver {
 
@@ -15,10 +19,13 @@ public class Solver {
     }
 
     public static void generateGoal() {
+        StringBuilder goalBuilder = new StringBuilder();
         for(int i = 1; i < n*n; i++) {
-            goal += i + " ";
+            goalBuilder.append(i);
+            goalBuilder.append(" ");
         }
-        goal += 0; 
+        goalBuilder.append("0");
+        goal = goalBuilder.toString();
     }
 
     public static boolean isGoal(Board gameNode) { 
@@ -38,35 +45,36 @@ public class Solver {
         in.close();
         generateGoal();
     
-        int[][] null_matrix = new int[n][n];
-        Board avoid_error = new Board(null_matrix, -1, null);
-        Board root = new Board(first, avoid_error);
+        Board root = new Board(first);
 
         PriorityQueue<Board> q = new PriorityQueue<Board>(new BoardComparator());
-        HashSet<String> visited = new HashSet<String>();
-        visited.add(root.getString());
+        HashMap<String, String> visited = new HashMap<String, String>();
+        
         while(!isGoal(root)) {
             Board[] sons = root.generateSons();
             for(int i = 0; i < sons.length; i++) {
-                if(!visited.contains(sons[i].getString())) {
+                if(sons[i] != null && !visited.containsKey(sons[i].getString())) {
                     q.add(sons[i]);
                 }
             }
-            visited.add(root.getString());
+            if(!visited.containsKey(root.getString()))
+                visited.put(root.getString(), root.getParent());
             root = q.poll();
         }
+        visited.put(root.getString(), root.getParent());
+
         
-        //Printing the request, go look the proper PDF in the directory
         int mosse = root.getMoves();
         System.out.println(mosse);
-        
-        String[] moves = new String[mosse + 1];
-        for(int i = mosse; i >= 0; i--) {
-            moves[i] = root.getString();
-            root = root.getParent();
+        String[] path = new String[mosse + 1];
+        String temp = root.getString();
+
+        for (int i = path.length - 1; i >= 0; i--) {
+            path[i] = temp;
+            temp = visited.get(temp);
         }
-        for(int i = 0; i < mosse + 1; i++) {
-            System.out.println(moves[i]);
+        for (int i = 0; i < path.length; i++) {
+            System.out.println(path[i]);
         }
     }
 }
