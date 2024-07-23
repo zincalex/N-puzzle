@@ -65,7 +65,7 @@ public class Solver {
 
         
         int mosse = root.getMoves();
-        System.out.println(mosse);
+        System.out.println("Total moves : " + mosse);
         String[] path = new String[mosse + 1];
         String temp = root.getString();
 
@@ -73,6 +73,7 @@ public class Solver {
             path[i] = temp;
             temp = visited.get(temp);
         }
+        System.out.println("\nList of moves :");
         for (int i = 0; i < path.length; i++) {
             System.out.println(path[i]);
         }
