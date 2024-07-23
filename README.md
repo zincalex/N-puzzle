@@ -38,7 +38,9 @@ the first element in the frontier which has never been visited.
 
 ### The Heuristics
 When we use the A* algorithm, we have a evaluation function $f(x)$ which is obtained as the sum of the heuristic function and a cost function:
+
 $$f(x)=g(x)+h(x)$$
+
 - $g(x)$ is the path cost to reach a configuration $x$ (the number of steps)
 - $h(x)$ is an estimate of the missing steps required to reach the final position.
     I've used the manhattan heuristic combined with the linear conflict heuristic
