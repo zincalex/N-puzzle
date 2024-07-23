@@ -1,6 +1,7 @@
 # N-puzzle solver
 Program made for an university project for the Data Structure and Algorithms course given by professor Fabio Vandin a.y 2021/2022.
 The project was designed as a competition between students, to design the fastest algorithm to solve a generalized <a href="https://en.wikipedia.org/wiki/15_Puzzle" target="_blank" rel="noreferrer">15-Puzzle</a> with the minimum number of moves. 
+
 Among all students, this program was awarded as the fastest (the professor tested all programs on the same machine with the 8-puzzle version, though).
 
 ## Overview
@@ -18,9 +19,9 @@ The program takes as input a txt file formatted as follows:
 - The second line is the displacement of the tiles, where from left to right we insert the element starting from the upper left corner; 0 is used as empty cell.
 
 After compilation, run :
-'''shell
+```shell
 java Solver data/$.txt
-'''
+```
 
 ## Idea
 ### Structure
